@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.1/angular.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<body>
+<div ng-app="weather" ng-controller="weatherctrl">
+        <div class="container" style="text-align: center;width:300px;height:450px;margin-top: 100px;border: 2px #7b7878 solid;border-radius: 10px;">
+            <h3>Weather Details</h3><hr style="border: 1px #7b7878 solid;">
+            <label>State:</label><input type="text" ng-model="state" placeholder="eg:MO" class="form-control" style="margin: 6px;width: 150px;margin-left:60px;">
+            <label>City:</label><input type="text" ng-model="city" placeholder="eg:kansas city" class="form-control" style="margin: 6px;width: 150px;margin-left:60px">
+            <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#demo" ng-click="getWeather()"> Get Weather Details</button>
+            <br/>
+            <div class="collapse" id="demo">
+                <p class="currentConditions" ng-bind-html-unsafe="currentweather.html"></p>
+                <div class="currentIcon" ng-bind-html-unsafe="currentIcon.html"></div>
+            </div>
+        </div>
+
+
+</div>
+<script>
+
+    angular.module('weather', [])
+        .controller('weatherctrl', function($scope, $http) {
+            $scope.getWeather = function() {
+                $http.get('http://api.wunderground.com/api/36b799dc821d5836/conditions/q/'+$scope.state+'/'+$scope.city+'.json').success(function(data) {
+                    console.log(data);
+                    tempinf = data.current_observation.temp_f;
+                    tempinc = data.current_observation.temp_c;
+                    wind = data.current_observation.wind_string;
+                    tempicon = data.current_observation.icon_url;
+                    weather = data.current_observation.weather;
+                    humidity = data.current_observation.relative_humidity;
+                    $scope.currentweather = {
+                        html: "Temperature : " + tempinf + " &deg; F , "+ tempinc +" &deg; C <br> Humidity:"+humidity+"<br> Wind:"+ wind +"<br>weather: "+ weather + ""
+                    }
+                    $scope.currentIcon = {
+                        html: "<img src='" + tempicon + "'/>"
+                    }
+                })
+            }
+        });
+</script>
+</body>
+</html>
