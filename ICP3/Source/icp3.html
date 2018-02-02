@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.1.1/angular.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<body>
+<div ng-app="mashup" ng-controller="mashupcontrol">
+    <div class="container" style="text-align: center;width:300px;height:300px;margin-top: 100px;border: 2px #85dc62 solid;border-radius: 10px;">
+        <h3>Mashup Application</h3><hr style="border: 1px #85dc62 solid;">
+        <label>Item:</label><input type="text" ng-model="item" placeholder="eg:1 apple" class="form-control" style="margin: 6px;width: 150px;margin-left:60px;">
+        <button type="button" class="btn btn-success" data-toggle="collapse" data-target="#demo" ng-click="nutritionDetails()"> Get Nutrition Details</button>
+        <br/>
+        <div class="collapse" id="demo">
+            <p ng-bind-html-unsafe="calorieDetails.html"></p>
+            <p ng-bind-html-unsafe="converttexttospeech.html"></p>
+        </div>
+    </div>
+
+
+</div>
+<script>
+
+    angular.module('mashup', [])
+        .controller('mashupcontrol', function($scope, $http) {
+            $scope.nutritionDetails = function() {
+                $http.get('https://api.edamam.com/api/nutrition-data?app_id=b3e6aa32&app_key=7b6671871b7d9250c63814128b57e9e3&ingr='+$scope.item).success(function(data) {
+                    console.log(data);
+                    calories = data.calories;
+                    wght = data.totalWeight;
+                    var itemDetail = $scope.item +" is having "+calories+" calories and weighs "+wght+" gms";
+                    var refURL = "http://stream.watsonplatform.net/text-to-speech/api/v1/synthesize?username=b4fb717e-6cde-4cb0-83eb-3f757f666f31&password=SOQWKEVWpm0o&text="+itemDetail;
+                    $scope.calorieDetails = {
+                        html: $scope.item +" is having "+calories+" calories and weighs "+wght+" gms"
+                    }
+                    $scope.converttexttospeech = {
+                        html: "<button class=\"btn\"><a href='"+refURL+"'><span class=\"glyphicon glyphicon-play-circle\"></span></a></button>"
+                    }
+                })
+            }
+        });
+</script>
+</body>
+</html>
